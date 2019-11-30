@@ -38,7 +38,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
         val paulSabatier = LatLng(43.562382, 1.470153)
         map.addMarker(MarkerOptions().position(paulSabatier).title("Paul Sabatier"))
-        map.moveCamera(CameraUpdateFactory.newLatLng(paulSabatier))
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(paulSabatier, 17.0f))
+
 
         setUpMap()
     }
