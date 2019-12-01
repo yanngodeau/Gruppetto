@@ -10,14 +10,57 @@
     app:behavior_peekHeight="190dp"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
-    <TextView
+    <com.google.android.material.card.MaterialCardView
+        style="@style/Widget.MaterialComponents.CardView"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:id="@+id/current_location"
-        android:background="@color/colorPrimary"
-        android:gravity="start"
-        android:text="@string/location"
-        android:textColor="@android:color/white" />
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/mtrl_card_spacing"
+        android:layout_marginTop="@dimen/mtrl_card_spacing"
+        android:layout_marginRight="@dimen/mtrl_card_spacing"
+        app:cardBackgroundColor="@color/colorPrimary"
+        android:minHeight="80dp">
+
+<!--        <TextView-->
+<!--            android:id="@+id/current_location"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="80dp"-->
+<!--            android:background="@color/colorPrimary"-->
+<!--            android:gravity="start"-->
+<!--            android:text="@string/location"-->
+<!--            android:textColor="@android:color/white" />-->
+
+
+        <!-- Card contents. -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/current_location"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:textColor="@android:color/white"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+            android:text="Loction"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/current_address"
+            android:layout_marginTop="50dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:textColor="@android:color/white"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead.Inverse"
+            android:text="Address"/>
+
+
+
+    </com.google.android.material.card.MaterialCardView>
+
 
     <TextView
         android:layout_width="match_parent"
