@@ -29,9 +29,10 @@ import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest
 import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.android.synthetic.main.activity_main.*
+import com.google.firebase.firestore.GeoPoint
 import java.io.IOException
 import java.util.*
 
@@ -53,12 +54,16 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
     private lateinit var db: FirebaseFirestore
     private lateinit var auth: FirebaseAuth
     private lateinit var userUID: String
+    private lateinit var currentAddress: String
+    private lateinit var currentLocation: GeoPoint
+    private lateinit var currentPlace: String
+    private lateinit var fab: FloatingActionButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-
+        fab = findViewById(R.id.fab)
         setupUser()
         getLocationHistory()
 
@@ -84,6 +89,10 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
         })
 
         locationListView = findViewById(R.id.card_listView)
+
+        fab.setOnClickListener {
+            addNewLocation()
+        }
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -148,6 +157,7 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
             if (location != null) {
                 lastLocation = location
                 val currentLatLng = LatLng(location.latitude, location.longitude)
+                this.currentLocation = GeoPoint(location.latitude, location.longitude)
                 placeMarkerOnMap(currentLatLng)
                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 16f))
             }
@@ -200,6 +210,7 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
             Log.e("MapsActivity", e.localizedMessage)
         }
 
+        currentAddress = addressText
         return addressText
     }
 
@@ -210,7 +221,8 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
         var currentPlaceTask: Task<FindCurrentPlaceResponse> =
             placesClient.findCurrentPlace(currentPlaceRequest)
         currentPlaceTask.addOnSuccessListener { response ->
-            locationTextView.text = response.placeLikelihoods[0].place.name
+            currentPlace = response.placeLikelihoods[0].place.name!!
+            locationTextView.text = currentPlace
         }
         currentPlaceTask.addOnFailureListener { exception ->
             exception.printStackTrace()
@@ -219,4 +231,33 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
             toast.show()
         }
     }
+
+    private fun addNewLocation() {
+        val dataLocation = hashMapOf(
+            "title" to currentPlace,
+            "address" to currentAddress,
+            "location" to currentLocation,
+            "time" to Date()
+        )
+        val ref = db.collection("users").document(userUID).collection("locations")
+            .add(dataLocation)
+            .addOnSuccessListener {
+                val toast =
+                    Toast.makeText(
+                        applicationContext,
+                        "New location added",
+                        Toast.LENGTH_LONG
+                    )
+                toast.show()
+            }.addOnFailureListener {
+                val toast =
+                    Toast.makeText(
+                        applicationContext,
+                        "Error adding a location",
+                        Toast.LENGTH_LONG
+                    )
+                toast.show()
+            }
+    }
+}
 }

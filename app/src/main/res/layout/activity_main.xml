@@ -25,8 +25,8 @@
         android:layout_margin="10dp"
         android:background="@color/colorAccent"
         app:layout_anchor="@+id/bottom_sheet"
-        app:layout_anchorGravity="top|end"
         android:clickable="true"
+        app:layout_anchorGravity="top|end"
         android:focusable="true" />
 
 
