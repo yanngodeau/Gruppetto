@@ -6,7 +6,10 @@ import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.widget.ListView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -24,6 +27,8 @@ import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest
 import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse
 import com.google.android.libraries.places.api.net.PlacesClient
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import kotlinx.android.synthetic.main.activity_main.*
 import java.io.IOException
 import java.util.*
 
@@ -40,6 +45,8 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
     private lateinit var addressTextView: TextView
     private lateinit var lastLocation: Location
     private lateinit var placesClient: PlacesClient
+    private lateinit var bottomSheet: View
+    private lateinit var locationListView: ListView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +61,20 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
 
         setUpPlaces()
         guessCurrentPlace()
+
+        bottomSheet = findViewById(R.id.bottom_sheet)
+        val bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
+        bottomSheetBehavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                fab.animate().scaleX(1 - slideOffset).scaleY(1 - slideOffset).setDuration(0).start()
+            }
+
+            override fun onStateChanged(p0: View, p1: Int) {}
+
+        })
+
+        locationListView = findViewById(R.id.card_listView)
+        setUpLocationList()
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -68,6 +89,19 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
     }
 
     override fun onMarkerClick(p0: Marker?) = false
+
+    private fun setUpLocationList() {
+        val cardLocation: CardLocation = CardLocation("Place de Verdun", "1 Place de Verdun, 65000 TARBES, France")
+        val cardLocation2: CardLocation = CardLocation("Lycée Théophile Gautier", "15 Rue Abbé Torne, 65000 Tarbes, France")
+
+        val locationList = arrayListOf<CardLocation>()
+
+        locationList.add(cardLocation)
+        locationList.add(cardLocation2)
+
+        val adapter = LocationAdapter(this, locationList)
+        locationListView.adapter = adapter
+    }
 
     private fun setUpPlaces() {
         if (!Places.isInitialized()) {
@@ -123,9 +157,7 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
             addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
             if (null != addresses && addresses.isNotEmpty()) {
                 addressText =
-                    addresses.get(0).featureName + ", " + addresses.get(0).adminArea + ", " + addresses.get(
-                        0
-                    ).countryName
+                    addresses.get(0).getAddressLine(0)
             }
         } catch (e: IOException) {
             Log.e("MapsActivity", e.localizedMessage)
@@ -144,7 +176,8 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
         }
         currentPlaceTask.addOnFailureListener { exception ->
             exception.printStackTrace()
-            locationTextView.text = "Error Place"
+            val toast = Toast.makeText(applicationContext, "Location recovery error", Toast.LENGTH_SHORT)
+            toast.show()
         }
     }
 }
