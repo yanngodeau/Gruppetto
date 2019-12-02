@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "227687296071",
+    "firebase_url": "https://gruppetto-37713.firebaseio.com",
+    "project_id": "gruppetto-37713",
+    "storage_bucket": "gruppetto-37713.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:227687296071:android:1429e2fdbe84dfdcbd1562",
+        "android_client_info": {
+          "package_name": "com.example.gruppetto"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "227687296071-7s0bkp5r6335c8gf31ndk0j9trir1a6p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAi8rb16-PBNMTL6ZMl_ZH8ij6TAYI8TeQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "227687296071-7s0bkp5r6335c8gf31ndk0j9trir1a6p.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
