@@ -17,7 +17,7 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.prp'
         }
     }
     compileOptions {
@@ -46,6 +46,7 @@ dependencies {
     implementation "com.google.firebase:firebase-core:17.2.1"
     implementation "com.google.firebase:firebase-auth:19.2.0"
     implementation 'com.google.firebase:firebase-firestore:21.3.0'
+    implementation 'com.github.mancj:MaterialSearchBar:0.8.2'
 }
 
 apply plugin: 'com.google.gms.google-services'
