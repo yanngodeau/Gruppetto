@@ -3,23 +3,23 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_camera"
-            android:title="Import" />
+            android:title="Carte" />
         <item
             android:id="@+id/nav_gallery"
-            android:title="Gallery" />
+            android:title="Discussions" />
         <item
             android:id="@+id/nav_slideshow"
-            android:title="Slideshow" />
+            android:title="Evenements" />
         <item
             android:id="@+id/nav_manage"
-            android:title="Tools" />
+            android:title="Profil" />
     </group>
 
     <item android:title="Communicate">
         <menu>
             <item
                 android:id="@+id/nav_share"
-                android:title="Share" />
+                android:title="Share"/>
             <item
                 android:id="@+id/nav_send"
                 android:title="Send" />
