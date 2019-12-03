@@ -1,27 +1,46 @@
 package com.example.gruppetto
 
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat.startActivity
+import com.bumptech.glide.Glide
+import com.firebase.ui.storage.images.FirebaseImageLoader
+import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
+import java.io.File
+
 
 class ProfilActivity : AppCompatActivity(){
 
     private lateinit var auth: FirebaseAuth
     private lateinit var user: String
     private lateinit var db : FirebaseFirestore
+    private lateinit var storage : FirebaseStorage
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
-         super.onCreate(savedInstanceState)
-         setContentView(R.layout.activity_profil)
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_profil)
+        setSupportActionBar(findViewById(R.id.my_toolbar))
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
 
         auth = FirebaseAuth.getInstance()
         user = auth.currentUser!!.uid
         db = FirebaseFirestore.getInstance()
+        storage = FirebaseStorage.getInstance()
+
 
 
 
@@ -29,19 +48,67 @@ class ProfilActivity : AppCompatActivity(){
     }
 
     private fun readProfil() {
+
+        //partie database
         val nameText : TextView = findViewById(R.id.profilText)
         val mailText : TextView = findViewById(R.id.mailText)
+        var photoUrl = "gs://gruppetto-37713.appspot.com/blank.png"
+
 
         val ref = db.collection("users").document(user)
         ref.get().addOnSuccessListener { document ->
             if (document != null) {
                 nameText.text = document["name"].toString()
                 mailText.text = document["mail"].toString()
+                photoUrl = document["photoUrl"].toString()
             } else {
                 Log.w("PROFIL", "Profil null")
             }
         }
 
+        //download profile picture
+        Log.w("PROFIL", photoUrl)
+        val storageRef = storage.getReferenceFromUrl(photoUrl)
+        val imageProfil = findViewById<ImageView>(R.id.profilPicture)
+        val ONE_MEGABYTE: Long = 1024 * 1024
+        storageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener{
+            data ->
+            val bitmap : Bitmap = BitmapFactory.decodeByteArray(data,0,data.size)
+            imageProfil.setImageBitmap(bitmap)
+        }
     }
 
-}
+
+    //nécessaire pour le bouton retour de l'app bar
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return true
+    }
+
+    //lien entre appbar et menu xml
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.app_bar_profil, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+        R.id.action_edit -> {
+            val intent = Intent(this, ProfilEditActivity::class.java)
+            startActivity(intent)
+            true
+        }
+        R.id.action_logout -> {
+            auth.signOut()
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            true
+        }
+        else -> {
+            super.onOptionsItemSelected(item)
+        }
+    }
+
+
+
+
+    }

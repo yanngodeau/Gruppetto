@@ -25,7 +25,9 @@
         android:layout_margin="10dp"
         android:background="@color/colorAccent"
         app:layout_anchor="@+id/bottom_sheet"
-        app:layout_anchorGravity="top|end" />
+        app:layout_anchorGravity="top|end"
+        android:clickable="true"
+        android:focusable="true" />
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

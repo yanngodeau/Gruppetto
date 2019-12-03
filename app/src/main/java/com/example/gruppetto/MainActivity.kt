@@ -1,5 +1,6 @@
 package com.example.gruppetto
 
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
@@ -75,6 +76,7 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
 
         locationListView = findViewById(R.id.card_listView)
         setUpLocationList()
+
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
