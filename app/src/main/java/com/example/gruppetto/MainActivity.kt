@@ -7,12 +7,15 @@ import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -28,16 +31,21 @@ import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest
 import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse
 import com.google.android.libraries.places.api.net.PlacesClient
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
+import com.mancj.materialsearchbar.MaterialSearchBar
 import java.io.IOException
 import java.util.*
 
 
-open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
+    MaterialSearchBar.OnSearchActionListener, BottomNavigationView.OnNavigationItemSelectedListener,
+    NavigationView.OnNavigationItemSelectedListener {
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
@@ -58,6 +66,11 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
     private lateinit var currentLocation: GeoPoint
     private lateinit var currentPlace: String
     private lateinit var fab: FloatingActionButton
+
+    private lateinit var lastSearches: List<String>
+    private lateinit var searchBar: MaterialSearchBar
+    private lateinit var drawer: DrawerLayout
+    private lateinit var navigationView: NavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -94,6 +107,8 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
         fab.setOnClickListener {
             addNewLocation()
         }
+
+        setUpSearchBar()
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -108,6 +123,16 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
     }
 
     override fun onMarkerClick(p0: Marker?) = false
+
+    private fun setUpSearchBar() {
+        searchBar = findViewById(R.id.searchBar)
+        drawer = findViewById(R.id.drawer_layout)
+
+        searchBar.setOnSearchActionListener(this)
+
+        navigationView = findViewById(R.id.nav_view)
+        navigationView.setNavigationItemSelectedListener(this)
+    }
 
     private fun setUpLocationList(cardLocationList: ArrayList<CardLocation>) {
         val cardLocation =
@@ -126,8 +151,6 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
         auth = FirebaseAuth.getInstance()
         userUID = auth.currentUser!!.uid
         db = FirebaseFirestore.getInstance()
-
-
     }
 
     private fun setUpPlaces() {
@@ -259,6 +282,40 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
                     )
                 toast.show()
             }
+    }
+
+    // Search bar configuration
+
+    override fun onBackPressed() {
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START)
+        } else {
+            super.onBackPressed()
+        }
+
+    }
+
+    override fun onButtonClicked(buttonCode: Int) {
+        when (buttonCode) {
+            MaterialSearchBar.BUTTON_NAVIGATION -> drawer.openDrawer(GravityCompat.START)
+            MaterialSearchBar.BUTTON_BACK -> searchBar.disableSearch()
+        }
+    }
+
+    override fun onSearchStateChanged(enabled: Boolean) {
+        drawer.closeDrawer(GravityCompat.START)
+    }
+
+    override fun onSearchConfirmed(text: CharSequence?) {
+        drawer.closeDrawer(GravityCompat.START)
+    }
+
+
+    override fun onNavigationItemSelected(menuItem: MenuItem): Boolean {
+        val id = menuItem.itemId
+
+        drawer.closeDrawer(GravityCompat.START)
+        return true
     }
 }
 }
