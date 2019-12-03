@@ -3,7 +3,6 @@ package com.example.gruppetto
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -11,14 +10,9 @@ import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat.startActivity
-import com.bumptech.glide.Glide
-import com.firebase.ui.storage.images.FirebaseImageLoader
-import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
-import java.io.File
 
 
 class ProfilActivity : AppCompatActivity(){
@@ -61,21 +55,23 @@ class ProfilActivity : AppCompatActivity(){
                 nameText.text = document["name"].toString()
                 mailText.text = document["mail"].toString()
                 photoUrl = document["photoUrl"].toString()
+
+                //download profile picture
+                Log.w("PROFIL", photoUrl)
+                val storageRef = storage.getReferenceFromUrl(photoUrl)
+                val imageProfil = findViewById<ImageView>(R.id.profilPicture)
+                val ONE_MEGABYTE: Long = 1024 * 1024
+                storageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener{
+                        data ->
+                    val bitmap : Bitmap = BitmapFactory.decodeByteArray(data,0,data.size)
+                    imageProfil.setImageBitmap(bitmap)
+                }
+
             } else {
                 Log.w("PROFIL", "Profil null")
             }
         }
 
-        //download profile picture
-        Log.w("PROFIL", photoUrl)
-        val storageRef = storage.getReferenceFromUrl(photoUrl)
-        val imageProfil = findViewById<ImageView>(R.id.profilPicture)
-        val ONE_MEGABYTE: Long = 1024 * 1024
-        storageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener{
-            data ->
-            val bitmap : Bitmap = BitmapFactory.decodeByteArray(data,0,data.size)
-            imageProfil.setImageBitmap(bitmap)
-        }
     }
 
 
