@@ -41,17 +41,15 @@
             android:value="@string/google_maps_key" />
 
         <activity android:name=".LoginActivity">
-
-        </activity>
-        <activity
-            android:name=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity android:name=".ProfilActivity" />
         <activity android:name=".ProfilEditActivity"/>
