@@ -6,7 +6,10 @@ import android.location.Address
 import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.ListView
@@ -67,10 +70,12 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
     private lateinit var currentPlace: String
     private lateinit var fab: FloatingActionButton
 
-    private lateinit var lastSearches: List<String>
     private lateinit var searchBar: MaterialSearchBar
     private lateinit var drawer: DrawerLayout
     private lateinit var navigationView: NavigationView
+
+    private var suggestions = arrayListOf<User>()
+    private lateinit var userSuggestionsAdapter: UserSuggestionsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -109,6 +114,7 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
         }
 
         setUpSearchBar()
+        initializeSuggestions()
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -132,6 +138,17 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
 
         navigationView = findViewById(R.id.nav_view)
         navigationView.setNavigationItemSelectedListener(this)
+
+        searchBar.addTextChangeListener(object : TextWatcher {
+            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
+
+            override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
+                userSuggestionsAdapter.filter.filter(searchBar.text)
+            }
+
+            override fun afterTextChanged(editable: Editable) {}
+        })
+
     }
 
     private fun setUpLocationList(cardLocationList: ArrayList<CardLocation>) {
@@ -184,6 +201,30 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
                 this.currentLocation = GeoPoint(location.latitude, location.longitude)
                 placeMarkerOnMap(currentLatLng)
                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 16f))
+            }
+        }
+    }
+
+    private fun initializeSuggestions() {
+//        val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val inflater = LayoutInflater.from(applicationContext)
+        userSuggestionsAdapter = UserSuggestionsAdapter(inflater)
+
+        searchBar.setMaxSuggestionCount(2)
+
+        val ref = db.collection("users").get().addOnSuccessListener { result ->
+            if (result != null) {
+                for (document in result) {
+                    suggestions.add(
+                        User(
+                            document["name"].toString(),
+                            document["mail"].toString(),
+                            document["photoUrl"].toString()
+                        )
+                    )
+                }
+                userSuggestionsAdapter.suggestions = suggestions
+                searchBar.setCustomSuggestionAdapter(userSuggestionsAdapter)
             }
         }
     }
