@@ -64,6 +64,7 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
         setContentView(R.layout.activity_main)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         fab = findViewById(R.id.fab)
+
         setupUser()
         getLocationHistory()
 

@@ -24,7 +24,9 @@
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         tools:ignore="GoogleAppIndexingWarning">
 
-        <uses-library android:name="org.apache.http.legacy" android:required="false"/>
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -39,13 +41,18 @@
             android:value="@string/google_maps_key" />
 
         <activity android:name=".LoginActivity">
+
+        </activity>
+        <activity
+            android:name=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" />
+
         <activity android:name=".ProfilActivity" />
         <activity android:name=".ProfilEditActivity"/>
 
