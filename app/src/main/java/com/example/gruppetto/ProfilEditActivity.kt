@@ -1,6 +1,9 @@
 package com.example.gruppetto
 
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -9,10 +12,12 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.scale
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.activity_profil_edit.*
+import java.io.ByteArrayOutputStream
 
 
 class ProfilEditActivity : AppCompatActivity() {
@@ -21,6 +26,7 @@ class ProfilEditActivity : AppCompatActivity() {
     private lateinit var user: String
     private lateinit var db : FirebaseFirestore
     private lateinit var storage : FirebaseStorage
+    private var photoChanged : Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,11 +59,11 @@ class ProfilEditActivity : AppCompatActivity() {
     //result apres avoir pick une photo de la gallerie
     override fun onActivityResult(requestCode:Int, resultCode:Int, data:Intent?){
         super.onActivityResult(requestCode, resultCode, data)
-        val uploadImage : ImageView = findViewById(R.id.upload_image)
         if(requestCode == 0 && resultCode == RESULT_OK && data != null && data.data != null ) {
             val filePath : Uri = data.data
             val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, filePath)
-            uploadImage.setImageBitmap(bitmap)
+            upload_image.setImageBitmap(bitmap.scale(400,300,true))
+            photoChanged = true
         }
 
     }
@@ -65,9 +71,44 @@ class ProfilEditActivity : AppCompatActivity() {
 
 
     private fun saveProfil() {
-        val nameText : EditText = findViewById(R.id.nameText)
-        val mailText : EditText = findViewById(R.id.mailText)
-        val profilPhoto : ImageView = findViewById(R.id.upload_image)
+        //update db
+        val userRef = db.collection("users").document(user)
+        userRef.update("name", nameText.text.toString())
+            .addOnSuccessListener{ Log.w("Name","Name updated")}
+            .addOnFailureListener { Log.w("Name", "Name not updated") }
+        userRef.update("mail",mailText.text.toString())
+            .addOnSuccessListener { Log.w("Mail","Mail updated")}
+            .addOnFailureListener { Log.w("Mail", "Mail not updated") }
+
+        //upload image
+
+        if (photoChanged) {
+            var photoUrl = "gs://gruppetto-37713.appspot.com/blank.png"
+            val storageRef = storage.reference.child("users/"+user+".png")
+            val bitmap = (upload_image.drawable as BitmapDrawable).bitmap
+            val baos = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+            val data = baos.toByteArray()
+            var uploadTask = storageRef.putBytes(data)
+            uploadTask.addOnFailureListener {
+                Log.w("Upload photo","FAIL")
+            }.addOnSuccessListener {
+                    taskSnapshot ->
+                storageRef.downloadUrl.addOnSuccessListener {
+                    photoUrl = it.toString()
+                    Log.w("photoUrl",photoUrl)
+                    userRef.update("photoUrl",photoUrl)
+                        .addOnSuccessListener {
+                            Log.w("photoUrl","photoUrl updated")
+                            finish()}
+                        .addOnFailureListener { Log.w("photoUrl", "photoUrl not updated")}
+                }
+            }
+        } else {
+            finish()
+        }
+
+
 
 
     }
@@ -75,12 +116,22 @@ class ProfilEditActivity : AppCompatActivity() {
     private fun readProfil() {
 
 
-        var url = ""
+        var photoUrl = "gs://gruppetto-37713.appspot.com/blank.png"
         val ref = db.collection("users").document(user)
         ref.get().addOnSuccessListener { document ->
             if (document != null) {
                 nameText.setText(document["name"].toString())
                 mailText.setText(document["mail"].toString())
+                photoUrl = document["photoUrl"].toString()
+
+                //download profile picture
+                Log.w("PROFIL", photoUrl)
+                val storageRef = storage.getReferenceFromUrl(photoUrl)
+                val ONE_MEGABYTE: Long = 1024 * 1024
+                storageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener { data ->
+                    val bitmap: Bitmap = BitmapFactory.decodeByteArray(data, 0, data.size)
+                    upload_image.setImageBitmap(bitmap)
+                }
             } else {
                 Log.w("PROFIL", "Profil null")
             }

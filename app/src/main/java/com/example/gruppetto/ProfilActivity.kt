@@ -41,6 +41,11 @@ class ProfilActivity : AppCompatActivity(){
         readProfil()
     }
 
+    override fun onResume() {
+        super.onResume()
+        readProfil()
+    }
+
     private fun readProfil() {
 
         //partie database
@@ -63,8 +68,9 @@ class ProfilActivity : AppCompatActivity(){
                 val ONE_MEGABYTE: Long = 1024 * 1024
                 storageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener{
                         data ->
-                    val bitmap : Bitmap = BitmapFactory.decodeByteArray(data,0,data.size)
-                    imageProfil.setImageBitmap(bitmap)
+                        val bitmap : Bitmap = BitmapFactory.decodeByteArray(data,0,data.size)
+                        imageProfil.setImageBitmap(bitmap)
+
                 }
 
             } else {
