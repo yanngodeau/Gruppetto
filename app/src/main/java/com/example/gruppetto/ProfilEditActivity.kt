@@ -7,6 +7,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.text.TextUtils
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
@@ -14,9 +15,11 @@ import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.scale
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.activity_profil_edit.*
+import org.w3c.dom.Text
 import java.io.ByteArrayOutputStream
 
 
@@ -76,9 +79,25 @@ class ProfilEditActivity : AppCompatActivity() {
         userRef.update("name", nameText.text.toString())
             .addOnSuccessListener{ Log.w("Name","Name updated")}
             .addOnFailureListener { Log.w("Name", "Name not updated") }
+
         userRef.update("mail",mailText.text.toString())
-            .addOnSuccessListener { Log.w("Mail","Mail updated")}
+            .addOnSuccessListener {
+                //update auth
+                auth.currentUser?.updateEmail(mailText.text.toString())
+                Log.w("Mail","Mail updated")}
             .addOnFailureListener { Log.w("Mail", "Mail not updated") }
+
+        //update pw si besoin
+        if (!TextUtils.isEmpty(pwText.text)) {
+            if (pwText.text.length >= 6){
+                auth.currentUser?.updatePassword(pwText.text.toString())
+                    ?.addOnSuccessListener { Log.w("Password", "Password updated") }
+                    ?.addOnFailureListener { Log.w("Password", "Password not updated") }
+            } else {
+                pwText.error = ("6 caractères minimum")
+            }
+
+        }
 
         //upload image
 

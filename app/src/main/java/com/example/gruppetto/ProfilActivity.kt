@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import kotlinx.android.synthetic.main.cards_list.*
 
 
 class ProfilActivity : AppCompatActivity(){
@@ -35,8 +36,7 @@ class ProfilActivity : AppCompatActivity(){
         db = FirebaseFirestore.getInstance()
         storage = FirebaseStorage.getInstance()
 
-
-
+        setUpLocationList()
 
         readProfil()
     }
@@ -78,6 +78,19 @@ class ProfilActivity : AppCompatActivity(){
             }
         }
 
+    }
+
+    private fun setUpLocationList() {
+        val cardLocation: CardLocation = CardLocation("Place de Verdun", "1 Place de Verdun, 65000 TARBES, France")
+        val cardLocation2: CardLocation = CardLocation("Lycée Théophile Gautier", "15 Rue Abbé Torne, 65000 Tarbes, France")
+
+        val locationList = arrayListOf<CardLocation>()
+
+        locationList.add(cardLocation)
+        locationList.add(cardLocation2)
+
+        val adapter = LocationAdapter(this, locationList)
+        card_listView.adapter = adapter
     }
 
 
