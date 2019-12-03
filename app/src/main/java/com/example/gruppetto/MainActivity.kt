@@ -28,7 +28,10 @@ import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest
 import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import kotlinx.android.synthetic.main.activity_main.*
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.GeoPoint
 import java.io.IOException
 import java.util.*
 
@@ -47,11 +50,22 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
     private lateinit var placesClient: PlacesClient
     private lateinit var bottomSheet: View
     private lateinit var locationListView: ListView
+    private lateinit var db: FirebaseFirestore
+    private lateinit var auth: FirebaseAuth
+    private lateinit var userUID: String
+    private lateinit var currentAddress: String
+    private lateinit var currentLocation: GeoPoint
+    private lateinit var currentPlace: String
+    private lateinit var fab: FloatingActionButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        fab = findViewById(R.id.fab)
+
+        setupUser()
+        getLocationHistory()
 
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
@@ -64,7 +78,8 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
 
         bottomSheet = findViewById(R.id.bottom_sheet)
         val bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
-        bottomSheetBehavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+        bottomSheetBehavior.setBottomSheetCallback(object :
+            BottomSheetBehavior.BottomSheetCallback() {
             override fun onSlide(bottomSheet: View, slideOffset: Float) {
                 fab.animate().scaleX(1 - slideOffset).scaleY(1 - slideOffset).setDuration(0).start()
             }
@@ -74,7 +89,10 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
         })
 
         locationListView = findViewById(R.id.card_listView)
-        setUpLocationList()
+
+        fab.setOnClickListener {
+            addNewLocation()
+        }
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -90,17 +108,25 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
 
     override fun onMarkerClick(p0: Marker?) = false
 
-    private fun setUpLocationList() {
-        val cardLocation: CardLocation = CardLocation("Place de Verdun", "1 Place de Verdun, 65000 TARBES, France")
-        val cardLocation2: CardLocation = CardLocation("Lycée Théophile Gautier", "15 Rue Abbé Torne, 65000 Tarbes, France")
+    private fun setUpLocationList(cardLocationList: ArrayList<CardLocation>) {
+        val cardLocation =
+            CardLocation("Place de Verdun", "1 Place de Verdun, 65000 TARBES, France")
+        val cardLocation2 =
+            CardLocation("Lycée Théophile Gautier", "15 Rue Abbé Torne, 65000 Tarbes, France")
 
-        val locationList = arrayListOf<CardLocation>()
+        cardLocationList.add(cardLocation)
+        cardLocationList.add(cardLocation2)
 
-        locationList.add(cardLocation)
-        locationList.add(cardLocation2)
-
-        val adapter = LocationAdapter(this, locationList)
+        val adapter = LocationAdapter(this, cardLocationList)
         locationListView.adapter = adapter
+    }
+
+    private fun setupUser() {
+        auth = FirebaseAuth.getInstance()
+        userUID = auth.currentUser!!.uid
+        db = FirebaseFirestore.getInstance()
+
+
     }
 
     private fun setUpPlaces() {
@@ -131,6 +157,7 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
             if (location != null) {
                 lastLocation = location
                 val currentLatLng = LatLng(location.latitude, location.longitude)
+                this.currentLocation = GeoPoint(location.latitude, location.longitude)
                 placeMarkerOnMap(currentLatLng)
                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 16f))
             }
@@ -145,6 +172,26 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
         markerOptions.title(titleStr)
 
         map.addMarker(markerOptions)
+    }
+
+    private fun getLocationHistory() {
+        val ref = db.collection("users").document(userUID).collection("locations")
+        ref.get().addOnSuccessListener { result ->
+            if (result != null) {
+                var locationList = arrayListOf<CardLocation>()
+                for (document in result) {
+                    locationList.add(
+                        CardLocation(
+                            document["title"].toString(),
+                            document["address"].toString(),
+                            document["date"].toString()
+                        )
+                    )
+                }
+                setUpLocationList(locationList)
+            }
+        }
+
     }
 
     private fun getAddress(latLng: LatLng): String {
@@ -163,6 +210,7 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
             Log.e("MapsActivity", e.localizedMessage)
         }
 
+        currentAddress = addressText
         return addressText
     }
 
@@ -170,14 +218,45 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
         val placeFields: List<Place.Field> = Collections.singletonList(Place.Field.NAME)
         val currentPlaceRequest = FindCurrentPlaceRequest.newInstance(placeFields)
 
-        var currentPlaceTask: Task<FindCurrentPlaceResponse> = placesClient.findCurrentPlace(currentPlaceRequest)
+        var currentPlaceTask: Task<FindCurrentPlaceResponse> =
+            placesClient.findCurrentPlace(currentPlaceRequest)
         currentPlaceTask.addOnSuccessListener { response ->
-            locationTextView.text = response.placeLikelihoods[0].place.name
+            currentPlace = response.placeLikelihoods[0].place.name!!
+            locationTextView.text = currentPlace
         }
         currentPlaceTask.addOnFailureListener { exception ->
             exception.printStackTrace()
-            val toast = Toast.makeText(applicationContext, "Location recovery error", Toast.LENGTH_SHORT)
+            val toast =
+                Toast.makeText(applicationContext, "Location recovery error", Toast.LENGTH_SHORT)
             toast.show()
         }
+    }
+
+    private fun addNewLocation() {
+        val dataLocation = hashMapOf(
+            "title" to currentPlace,
+            "address" to currentAddress,
+            "location" to currentLocation,
+            "time" to Date()
+        )
+        val ref = db.collection("users").document(userUID).collection("locations")
+            .add(dataLocation)
+            .addOnSuccessListener {
+                val toast =
+                    Toast.makeText(
+                        applicationContext,
+                        "New location added",
+                        Toast.LENGTH_LONG
+                    )
+                toast.show()
+            }.addOnFailureListener {
+                val toast =
+                    Toast.makeText(
+                        applicationContext,
+                        "Error adding a location",
+                        Toast.LENGTH_LONG
+                    )
+                toast.show()
+            }
     }
 }
