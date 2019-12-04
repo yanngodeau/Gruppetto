@@ -55,7 +55,7 @@
 
         <activity android:name=".ProfilActivity" />
         <activity android:name=".ProfilEditActivity"/>
-
+        <activity android:name=".ChatActivity"/>
     </application>
 
 </manifest>
