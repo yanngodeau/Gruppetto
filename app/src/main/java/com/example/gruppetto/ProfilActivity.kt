@@ -14,6 +14,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.android.synthetic.main.cards_list.*
+import java.util.ArrayList
 
 
 class ProfilActivity : AppCompatActivity(){
@@ -36,7 +37,7 @@ class ProfilActivity : AppCompatActivity(){
         db = FirebaseFirestore.getInstance()
         storage = FirebaseStorage.getInstance()
 
-        setUpLocationList()
+        getLocationHistory()
 
         readProfil()
     }
@@ -79,17 +80,36 @@ class ProfilActivity : AppCompatActivity(){
         }
 
     }
+    private fun getLocationHistory() {
+        val ref = db.collection("users").document(user).collection("locations")
+        ref.get().addOnSuccessListener { result ->
+            if (result != null) {
+                var locationList = arrayListOf<CardLocation>()
+                for (document in result) {
+                    locationList.add(
+                        CardLocation(
+                            document["title"].toString(),
+                            document["address"].toString(),
+                            document["date"].toString()
+                        )
+                    )
+                }
+                setUpLocationList(locationList)
+            }
+        }
 
-    private fun setUpLocationList() {
-        val cardLocation: CardLocation = CardLocation("Place de Verdun", "1 Place de Verdun, 65000 TARBES, France")
-        val cardLocation2: CardLocation = CardLocation("Lycée Théophile Gautier", "15 Rue Abbé Torne, 65000 Tarbes, France")
+    }
 
-        val locationList = arrayListOf<CardLocation>()
+    private fun setUpLocationList(cardLocationList: ArrayList<CardLocation>) {
+        val cardLocation =
+            CardLocation("Place de Verdun", "1 Place de Verdun, 65000 TARBES, France")
+        val cardLocation2 =
+            CardLocation("Lycée Théophile Gautier", "15 Rue Abbé Torne, 65000 Tarbes, France")
 
-        locationList.add(cardLocation)
-        locationList.add(cardLocation2)
+        cardLocationList.add(cardLocation)
+        cardLocationList.add(cardLocation2)
 
-        val adapter = LocationAdapter(this, locationList)
+        val adapter = LocationAdapter(this, cardLocationList)
         card_listView.adapter = adapter
     }
 
