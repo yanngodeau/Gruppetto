@@ -1,4 +1,4 @@
-package com.example.gruppetto
+package com.example.gruppetto.Adapters
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
+import com.example.gruppetto.Models.CardLocation
+import com.example.gruppetto.R
 
 class LocationAdapter(private val context: Context,
                       private val dataSource: ArrayList<CardLocation>): BaseAdapter() {

@@ -1,4 +1,4 @@
-package com.example.gruppetto
+package com.example.gruppetto.Models
 
 import java.io.Serializable
 

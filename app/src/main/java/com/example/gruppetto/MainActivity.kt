@@ -6,10 +6,7 @@ import android.location.Address
 import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.ListView
@@ -19,6 +16,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import com.example.gruppetto.Adapters.LocationAdapter
+import com.example.gruppetto.Models.CardLocation
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -74,9 +73,6 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
     private lateinit var drawer: DrawerLayout
     private lateinit var navigationView: NavigationView
 
-    private var suggestions = arrayListOf<User>()
-    private lateinit var userSuggestionsAdapter: UserSuggestionsAdapter
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -113,7 +109,7 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
             addNewLocation()
         }
 
-        initializeSuggestions()
+        setUpSearchBar()
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -135,35 +131,31 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
 
         searchBar.setOnSearchActionListener(this)
 
-        userSuggestionsAdapter.suggestions = suggestions
-        searchBar.setCustomSuggestionAdapter(userSuggestionsAdapter)
-
-
         navigationView = findViewById(R.id.nav_view)
         navigationView.setNavigationItemSelectedListener(this)
 
-        searchBar.addTextChangeListener(object : TextWatcher {
-            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
-
-            override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-                userSuggestionsAdapter.filter.filter(searchBar.text)
-            }
-
-            override fun afterTextChanged(editable: Editable) {}
-        })
 
     }
 
     private fun setUpLocationList(cardLocationList: ArrayList<CardLocation>) {
         val cardLocation =
-            CardLocation("Place de Verdun", "1 Place de Verdun, 65000 TARBES, France")
+            CardLocation(
+                "Place de Verdun",
+                "1 Place de Verdun, 65000 TARBES, France"
+            )
         val cardLocation2 =
-            CardLocation("Lycée Théophile Gautier", "15 Rue Abbé Torne, 65000 Tarbes, France")
+            CardLocation(
+                "Lycée Théophile Gautier",
+                "15 Rue Abbé Torne, 65000 Tarbes, France"
+            )
 
         cardLocationList.add(cardLocation)
         cardLocationList.add(cardLocation2)
 
-        val adapter = LocationAdapter(this, cardLocationList)
+        val adapter = LocationAdapter(
+            this,
+            cardLocationList
+        )
         locationListView.adapter = adapter
     }
 
@@ -208,34 +200,6 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
         }
     }
 
-    private fun initializeSuggestions() {
-//        val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        val inflater = LayoutInflater.from(applicationContext)
-        userSuggestionsAdapter = UserSuggestionsAdapter(inflater)
-
-        val ref = db.collection("users")
-            .get()
-            .addOnSuccessListener { result ->
-                if (result != null) {
-                    for (document in result) {
-                        suggestions.add(
-                            User(
-                                document["name"].toString(),
-                                document["mail"].toString(),
-                                document["photoUrl"].toString()
-                            )
-                        )
-                    }
-                    setUpSearchBar()
-
-                }
-            }.addOnFailureListener{ exception ->
-                exception.printStackTrace()
-                val toast =
-                    Toast.makeText(applicationContext, "Profiles recovery error", Toast.LENGTH_SHORT)
-                toast.show()
-            }
-    }
 
     private fun placeMarkerOnMap(latLng: LatLng) {
         val markerOptions = MarkerOptions().position(latLng)
@@ -361,16 +325,19 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
     override fun onNavigationItemSelected(menuItem: MenuItem): Boolean {
         val id = menuItem.itemId
 
-         if (id == R.id.nav_discussions) {
+        if (id == R.id.nav_discussions) {
 //            val intent = Intent(this, MainActivity::class.java)
 //            startActivity(intent)
         } else if (id == R.id.nav_evenements) {
 //             val intent = Intent(this, MainActivity::class.java)
 //             startActivity(intent)
-         } else if (id == R.id.nav_profil) {
-             val intent = Intent(this, ProfilActivity::class.java)
-             startActivity(intent)
-         }
+        } else if (id == R.id.nav_profil) {
+            val intent = Intent(this, ProfilActivity::class.java)
+            startActivity(intent)
+        } else if (id == R.id.nav_rechercher) {
+            val intent = Intent(this, SearchActivity::class.java)
+            startActivity(intent)
+        }
 
         drawer.closeDrawer(GravityCompat.START)
         return true
