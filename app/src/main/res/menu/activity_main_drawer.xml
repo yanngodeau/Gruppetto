@@ -2,28 +2,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_camera"
+            android:id="@+id/nav_carte"
             android:title="Carte" />
         <item
-            android:id="@+id/nav_gallery"
+            android:id="@+id/nav_discussions"
             android:title="Discussions" />
         <item
-            android:id="@+id/nav_slideshow"
+            android:id="@+id/nav_evenements"
             android:title="Evenements" />
         <item
-            android:id="@+id/nav_manage"
+            android:id="@+id/nav_profil"
             android:title="Profil" />
     </group>
-
-    <item android:title="Communicate">
-        <menu>
-            <item
-                android:id="@+id/nav_share"
-                android:title="Share"/>
-            <item
-                android:id="@+id/nav_send"
-                android:title="Send" />
-        </menu>
-    </item>
 
 </menu>

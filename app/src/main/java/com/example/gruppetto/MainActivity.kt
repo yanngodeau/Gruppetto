@@ -1,5 +1,6 @@
 package com.example.gruppetto
 
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
@@ -359,6 +360,17 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
 
     override fun onNavigationItemSelected(menuItem: MenuItem): Boolean {
         val id = menuItem.itemId
+
+         if (id == R.id.nav_discussions) {
+//            val intent = Intent(this, MainActivity::class.java)
+//            startActivity(intent)
+        } else if (id == R.id.nav_evenements) {
+//             val intent = Intent(this, MainActivity::class.java)
+//             startActivity(intent)
+         } else if (id == R.id.nav_profil) {
+             val intent = Intent(this, ProfilActivity::class.java)
+             startActivity(intent)
+         }
 
         drawer.closeDrawer(GravityCompat.START)
         return true
