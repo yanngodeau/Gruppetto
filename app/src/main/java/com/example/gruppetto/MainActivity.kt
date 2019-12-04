@@ -112,7 +112,6 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
             addNewLocation()
         }
 
-        setUpSearchBar()
         initializeSuggestions()
     }
 
@@ -134,6 +133,10 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
         drawer = findViewById(R.id.drawer_layout)
 
         searchBar.setOnSearchActionListener(this)
+
+        userSuggestionsAdapter.suggestions = suggestions
+        searchBar.setCustomSuggestionAdapter(userSuggestionsAdapter)
+
 
         navigationView = findViewById(R.id.nav_view)
         navigationView.setNavigationItemSelectedListener(this)
@@ -209,23 +212,28 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
         val inflater = LayoutInflater.from(applicationContext)
         userSuggestionsAdapter = UserSuggestionsAdapter(inflater)
 
-        searchBar.setMaxSuggestionCount(2)
-
-        val ref = db.collection("users").get().addOnSuccessListener { result ->
-            if (result != null) {
-                for (document in result) {
-                    suggestions.add(
-                        User(
-                            document["name"].toString(),
-                            document["mail"].toString(),
-                            document["photoUrl"].toString()
+        val ref = db.collection("users")
+            .get()
+            .addOnSuccessListener { result ->
+                if (result != null) {
+                    for (document in result) {
+                        suggestions.add(
+                            User(
+                                document["name"].toString(),
+                                document["mail"].toString(),
+                                document["photoUrl"].toString()
+                            )
                         )
-                    )
+                    }
+                    setUpSearchBar()
+
                 }
-                userSuggestionsAdapter.suggestions = suggestions
-                searchBar.setCustomSuggestionAdapter(userSuggestionsAdapter)
+            }.addOnFailureListener{ exception ->
+                exception.printStackTrace()
+                val toast =
+                    Toast.makeText(applicationContext, "Profiles recovery error", Toast.LENGTH_SHORT)
+                toast.show()
             }
-        }
     }
 
     private fun placeMarkerOnMap(latLng: LatLng) {
@@ -325,14 +333,12 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
     }
 
     // Search bar configuration
-
     override fun onBackPressed() {
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START)
         } else {
             super.onBackPressed()
         }
-
     }
 
     override fun onButtonClicked(buttonCode: Int) {
