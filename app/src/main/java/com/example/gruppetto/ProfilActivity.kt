@@ -133,8 +133,4 @@ class ProfilActivity : AppCompatActivity(){
             super.onOptionsItemSelected(item)
         }
     }
-
-
-
-
-    }
+}

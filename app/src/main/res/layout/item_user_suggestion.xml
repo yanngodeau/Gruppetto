@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
+    android:id="@+id/item_search"
     android:layout_width="match_parent"
     android:padding="16dp"
     android:layout_height="80dp"
@@ -18,6 +19,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginStart="16dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/user_pp"/>
 
         <TextView
             android:text="TextView"
