@@ -42,6 +42,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
 import com.mancj.materialsearchbar.MaterialSearchBar
+import kotlinx.android.synthetic.main.activity_main.*
 import java.io.IOException
 import java.util.*
 
@@ -94,7 +95,6 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
 
         setUpPlaces()
         guessCurrentPlace()
-
         bottomSheet = findViewById(R.id.bottom_sheet)
         val bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
         bottomSheetBehavior.setBottomSheetCallback(object :
