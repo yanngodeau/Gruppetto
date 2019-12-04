@@ -8,12 +8,11 @@
     <ImageView
         android:id="@+id/profilPicture"
         android:layout_width="200dp"
-        android:layout_height="100dp"
-        android:layout_marginTop="100dp"
-        android:background="#9C27B0"
+        android:layout_height="150dp"
         android:layout_gravity="center"
-        android:contentDescription="@string/app_name">
-    </ImageView>
+        android:layout_marginTop="50dp"
+        android:contentDescription="@string/app_name"
+        app:srcCompat="@drawable/logo"></ImageView>
 
     <TextView
         android:id="@+id/appName"
@@ -31,10 +30,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="50dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="30dp"
         android:layout_marginEnd="50dp"
         android:hint="Identifiant"
-        android:inputType="textShortMessage"></EditText>
+        android:backgroundTint="#6200EE"
+        android:inputType="textShortMessage" />
 
     <EditText
         android:id="@+id/pwText"
@@ -42,8 +42,9 @@
         android:layout_height="wrap_content"
         android:hint="Mot de passe"
         android:layout_marginStart="50dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="20dp"
         android:layout_marginEnd="50dp"
+        android:backgroundTint="#6200EE"
         android:inputType="textPassword">
     </EditText>
 
@@ -53,7 +54,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="40dp"
-        android:text="CONNEXION">
+        android:background="#6200EE"
+        android:text="CONNEXION"
+        android:textColor="#FFFFFF">
 
     </Button>
 
