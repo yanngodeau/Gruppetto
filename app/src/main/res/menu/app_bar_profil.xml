@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- Settings, should always be in the overflow -->
+    <item android:id="@+id/action_edit"
+        android:title="Modifier le profil"
+        app:showAsAction="never"/>
+
+    <item android:id="@+id/action_logout"
+        android:title="Déconnexion"
+        app:showAsAction="never"/>
+
+</menu>

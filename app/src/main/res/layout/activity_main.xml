@@ -63,6 +63,8 @@
 
         </com.google.android.material.card.MaterialCardView>
 
+    <!-- include bottom sheet -->
+    <include layout="@layout/bottom_sheet"/>
 
         <!-- include bottom sheet -->
         <include layout="@layout/bottom_sheet" />

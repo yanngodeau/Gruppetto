@@ -5,14 +5,23 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/my_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@android:color/transparent"
+        android:elevation="0dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:menu="@menu/app_bar_profil"/>
+
     <ImageView
         android:id="@+id/profilPicture"
         android:layout_width="match_parent"
         android:layout_height="250dp"
-        android:background="#9C27B0"
+        android:background="#EBEBEB"
         android:contentDescription="@string/app_name"
-        app:layout_constraintTop_toTopOf="parent">
-    </ImageView>
+        app:layout_constraintTop_toTopOf="@id/my_toolbar"></ImageView>
 
 
     <TextView
@@ -21,8 +30,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="-60dp"
         android:layout_marginStart="10dp"
-        android:text="Oscar Samer"
-        android:textColor="#FFFFFF"
+        android:text="Name"
+        android:textColor="#000000"
         android:textSize="40sp">
     </TextView>
 
@@ -31,17 +40,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="40dp">
+        android:layout_marginTop="40dp"
+        android:layout_marginBottom="20dp">
 
         <ImageView
             android:id="@+id/mailIcon"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
             android:layout_marginStart="30dp"
-            android:background="#2B98C2">
-        </ImageView>
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/outline_mail_black_24dp" />
 
         <TextView
             android:id="@+id/mailText"
@@ -57,15 +66,9 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <ListView android:id="@+id/lv_profil"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="@+id/mailBar"
-        android:layout_marginTop="40dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="80dp"
-        />
+
+    <include layout="@layout/cards_list"/>
+
 
 
 
