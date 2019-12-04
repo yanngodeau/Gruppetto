@@ -22,11 +22,11 @@ class LoginActivity : AppCompatActivity() {
         setContentView(R.layout.activity_login)
 
         auth = FirebaseAuth.getInstance()
-        val loginText : EditText = findViewById(R.id.loginText)
-        val pwText : EditText = findViewById(R.id.pwText)
-        val loginButton : Button = findViewById(R.id.loginButton)
+        val loginText: EditText = findViewById(R.id.loginText)
+        val pwText: EditText = findViewById(R.id.pwText)
+        val loginButton: Button = findViewById(R.id.loginButton)
         loginButton.setOnClickListener {
-            if (validateForm()){
+            if (validateForm()) {
                 login(loginText.text.toString(), pwText.text.toString())
             }
         }
@@ -44,22 +44,18 @@ class LoginActivity : AppCompatActivity() {
         Log.d(TAG, "signIn:matt@gmail.com")
 
         auth.signInWithEmailAndPassword(email, pw).addOnCompleteListener(this) { task ->
-                if (task.isSuccessful) {
-                    // Sign in success, update UI with the signed-in user's information
-                    Log.d(TAG, "signInWithEmail:success")
-                    val user = auth.currentUser
-                    val intent = Intent(this, MainActivity::class.java)
-                    startActivity(intent)
-                    //updateUI(user)
-                } else {
-                    // If sign in fails, display a message to the user.
-                    Log.w(TAG, "signInWithEmail:failure", task.exception)
-                    Toast.makeText(baseContext, "Authentication failed.", Toast.LENGTH_SHORT).show()
-                    //updateUI(null)
-                }
+            if (task.isSuccessful) {
+                // Sign in success, update UI with the signed-in user's information
+                Log.d(TAG, "signInWithEmail:success")
+                val user = auth.currentUser
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
+                //updateUI(user)
             }
-
-
+        }.addOnFailureListener { exception ->
+            Log.w(TAG, "signInWithEmail:failure", exception)
+            Toast.makeText(baseContext, "Authentication failed.", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun validateForm(): Boolean {
