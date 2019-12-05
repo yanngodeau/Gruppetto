@@ -11,8 +11,12 @@
             android:id="@+id/nav_evenements"
             android:title="Evenements" />
         <item
-            android:id="@+id/nav_profil"
-            android:title="Profil" />
+        android:id="@+id/nav_profil"
+        android:title="Profil" />
+
+        <item
+            android:id="@+id/nav_rechercher"
+            android:title="Rechercher" />
     </group>
 
 </menu>

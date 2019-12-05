@@ -10,6 +10,8 @@ import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.example.gruppetto.Adapters.LocationAdapter
+import com.example.gruppetto.Models.CardLocation
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -81,15 +83,24 @@ class ProfilActivity : AppCompatActivity(){
     }
 
     private fun setUpLocationList() {
-        val cardLocation: CardLocation = CardLocation("Place de Verdun", "1 Place de Verdun, 65000 TARBES, France")
-        val cardLocation2: CardLocation = CardLocation("Lycée Théophile Gautier", "15 Rue Abbé Torne, 65000 Tarbes, France")
+        val cardLocation: CardLocation =
+            CardLocation(
+                "Place de Verdun",
+                "1 Place de Verdun, 65000 TARBES, France"
+            )
+        val cardLocation2: CardLocation =
+            CardLocation(
+                "Lycée Théophile Gautier",
+                "15 Rue Abbé Torne, 65000 Tarbes, France"
+            )
 
         val locationList = arrayListOf<CardLocation>()
 
         locationList.add(cardLocation)
         locationList.add(cardLocation2)
 
-        val adapter = LocationAdapter(this, locationList)
+        val adapter =
+            LocationAdapter(this, locationList)
         card_listView.adapter = adapter
     }
 
@@ -122,8 +133,4 @@ class ProfilActivity : AppCompatActivity(){
             super.onOptionsItemSelected(item)
         }
     }
-
-
-
-
-    }
+}
