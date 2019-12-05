@@ -4,9 +4,11 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.activity_chat_app.*
+import java.sql.Time
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -57,31 +59,31 @@ class ChatAppActivity : AppCompatActivity() {
                             return@addSnapshotListener
                         }
 
-                        val messageList = arrayListOf<TextMessage>()
-                        for (document in value!!){
-                            messageList.add(
-                                TextMessage(
-                                    document["sender"].toString(),
-                                    document["text"].toString(),
-                                    document["date"].toString()
+                        if (value != null){
+                            val messageList = arrayListOf<TextMessage>()
+                            for (document in value!!){
+                                messageList.add(
+                                    TextMessage(
+                                        document["sender"].toString(),
+                                        document["text"].toString(),
+                                        document["date"] as Timestamp
+                                    )
                                 )
-                            )
+                            }
+                            setUpMessages(messageList)
                         }
-                        setUpMessages(messageList)
                     }
             }
     }
 
     private fun sendMessage() {
         val messageString = edittext_chatbox.text.toString()
-        //mauvaise heure
-        val hour = Calendar.HOUR_OF_DAY.toString()+":"+Calendar.MINUTE.toString()
 
         if (messageString != ""){
             val message = hashMapOf(
                 "sender" to user,
                 "text" to messageString,
-                "date" to hour
+                "date" to Timestamp(Date())
             )
             val ref = db.collection("locations").document(location).collection("chat")
                 .add(message)
@@ -116,7 +118,7 @@ class ChatAppActivity : AppCompatActivity() {
                         TextMessage(
                             document["sender"].toString(),
                             document["text"].toString(),
-                            document["date"].toString()
+                            document["date"] as Timestamp
                         )
                     )
                 }
@@ -128,27 +130,7 @@ class ChatAppActivity : AppCompatActivity() {
 
 
     private fun setUpMessages(messageList : ArrayList<TextMessage>) {
-/*        val textMessage =
-            TextMessage("WlrVZ1FhfIZCa3G1k8WKUb75Phg1","Wassup", "17:52")
-        val textMessage2 =
-            TextMessage("ZYfm75KoKbT5k1QlxoJvbAr8bTW2","yo yo", "17:53")
 
-        messageList.add(textMessage)
-        messageList.add(textMessage2)
-        messageList.add(textMessage)
-        messageList.add(textMessage2)
-        messageList.add(textMessage)
-        messageList.add(textMessage)
-        messageList.add(textMessage2)
-        messageList.add(textMessage2)
-        messageList.add(textMessage)
-        messageList.add(textMessage2)
-        messageList.add(textMessage)
-        messageList.add(textMessage)
-        messageList.add(textMessage2)
-        messageList.add(textMessage2)
-        messageList.add(textMessage)
-        messageList.add(textMessage2)*/
 
         val adapter = MessageListAdapter(this, messageList)
         list_message_list.adapter = adapter

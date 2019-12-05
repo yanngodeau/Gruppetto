@@ -340,6 +340,8 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
                             "New location added",
                             Toast.LENGTH_LONG
                         )
+                    //refresh locations
+                    getLocationHistory()
                     toast.show()
                 }.addOnFailureListener {
                     val toast =

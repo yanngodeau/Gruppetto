@@ -6,8 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import java.util.*
+import kotlin.collections.ArrayList
 
 class MessageListAdapter (private val context: Context,
                           private val dataSource: ArrayList<TextMessage>) : BaseAdapter(){
@@ -42,7 +45,12 @@ class MessageListAdapter (private val context: Context,
         val heureText = rowView.findViewById<TextView>(R.id.text_message_time)
 
         messageText.text = message.text
-        heureText.text = message.date
+
+        val cal : Calendar = Calendar.getInstance()
+        cal.time = message.date.toDate()
+        val heure = cal.get(Calendar.HOUR).toString()+":"+cal.get(Calendar.MINUTE).toString()
+        heureText.text = heure
+
         return rowView
     }
 
