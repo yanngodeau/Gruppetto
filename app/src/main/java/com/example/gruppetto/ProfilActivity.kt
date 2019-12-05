@@ -84,17 +84,26 @@ class ProfilActivity : AppCompatActivity(){
         val ref = db.collection("users").document(user).collection("locations")
         ref.get().addOnSuccessListener { result ->
             if (result != null) {
-                var locationList = arrayListOf<CardLocation>()
+                var locationUuidList = arrayListOf<String>()
                 for (document in result) {
-                    locationList.add(
-                        CardLocation(
-                            document["title"].toString(),
-                            document["address"].toString(),
-                            document["date"].toString()
-                        )
-                    )
+                    locationUuidList.add(document.id)
                 }
-                setUpLocationList(locationList)
+
+                //get les détails des locations dans locations/
+                db.collection("locations").whereIn("id",locationUuidList).get().addOnSuccessListener {result ->
+                    if (result != null) {
+                        var locationList = arrayListOf<CardLocation>()
+                        for (document in result){
+                            locationList.add(
+                                CardLocation(
+                                    document["title"].toString(),
+                                    document["address"].toString()
+                                )
+                            )
+                        }
+                        setUpLocationList(locationList)
+                    }
+                }
             }
         }
 

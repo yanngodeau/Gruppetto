@@ -30,7 +30,9 @@ class ChatAppActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         user = auth.currentUser!!.uid
 
-        getMessagesRealTime()
+        val locTitle = intent.extras.getString("locationTitle")
+
+        getMessagesRealTime(locTitle)
         //getMessages()
 
         button_chatbox_send.setOnClickListener {
@@ -39,25 +41,34 @@ class ChatAppActivity : AppCompatActivity() {
 
     }
 
-    private fun getMessagesRealTime() {
-        val ref = db.collection("locations").document(location).collection("chat")
-            .addSnapshotListener{ value, e ->
-                if (e != null){
-                    Log.w("ERROR","Listen failed.",e)
-                    return@addSnapshotListener
+    private fun getMessagesRealTime(locTitle : String) {
+        //recherche location
+        val refLoc = db.collection("locations")
+            .whereEqualTo("title",locTitle)
+            .get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    location = document["id"].toString()
                 }
+                val ref = db.collection("locations").document(location).collection("chat")
+                    .addSnapshotListener{ value, e ->
+                        if (e != null){
+                            Log.w("ERROR","Listen failed.",e)
+                            return@addSnapshotListener
+                        }
 
-                val messageList = arrayListOf<TextMessage>()
-                for (document in value!!){
-                    messageList.add(
-                        TextMessage(
-                            document["sender"].toString(),
-                            document["text"].toString(),
-                            document["date"].toString()
-                        )
-                    )
-                }
-                setUpMessages(messageList)
+                        val messageList = arrayListOf<TextMessage>()
+                        for (document in value!!){
+                            messageList.add(
+                                TextMessage(
+                                    document["sender"].toString(),
+                                    document["text"].toString(),
+                                    document["date"].toString()
+                                )
+                            )
+                        }
+                        setUpMessages(messageList)
+                    }
             }
     }
 

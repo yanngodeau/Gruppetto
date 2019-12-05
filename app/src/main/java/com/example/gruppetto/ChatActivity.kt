@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.android.synthetic.main.bottom_sheet.view.*
 import kotlinx.android.synthetic.main.cards_list.*
 import java.util.ArrayList
 
@@ -34,17 +35,26 @@ class ChatActivity : AppCompatActivity() {
         val ref = db.collection("users").document(user).collection("locations")
         ref.get().addOnSuccessListener { result ->
             if (result != null) {
-                var locationList = arrayListOf<CardLocation>()
+                var locationUuidList = arrayListOf<String>()
                 for (document in result) {
-                    locationList.add(
-                        CardLocation(
-                            document["title"].toString(),
-                            document["address"].toString(),
-                            document["date"].toString()
-                        )
-                    )
+                    locationUuidList.add(document.id)
                 }
-                setUpLocationList(locationList)
+
+                //get les détails des locations dans locations/
+                db.collection("locations").whereIn("id",locationUuidList).get().addOnSuccessListener {result ->
+                    if (result != null) {
+                        var locationList = arrayListOf<CardLocation>()
+                        for (document in result){
+                            locationList.add(
+                                CardLocation(
+                                    document["title"].toString(),
+                                    document["address"].toString()
+                                )
+                            )
+                        }
+                        setUpLocationList(locationList)
+                    }
+                }
             }
         }
 
@@ -62,8 +72,11 @@ class ChatActivity : AppCompatActivity() {
         val adapter = LocationAdapter(this, cardLocationList)
         card_listView.adapter = adapter
         card_listView.setOnItemClickListener { parent, view, position, id ->
-            Toast.makeText(this, "Clicked item :"+" "+position, Toast.LENGTH_SHORT).show()
             val intent = Intent(this, ChatAppActivity::class.java)
+            val locTitle = view.current_location.text.toString()
+            intent.putExtra("locationTitle",locTitle)
+            Toast.makeText(this, "Clicked item :"+" "+locTitle, Toast.LENGTH_SHORT).show()
+
             startActivity(intent) }
 
     }
