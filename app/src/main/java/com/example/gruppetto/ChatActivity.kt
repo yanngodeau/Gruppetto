@@ -4,11 +4,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.gruppetto.Adapters.LocationAdapter
+import com.example.gruppetto.Models.CardLocation
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.bottom_sheet.view.*
 import kotlinx.android.synthetic.main.cards_list.*
-import java.util.ArrayList
+import java.util.*
 
 class ChatActivity : AppCompatActivity() {
 

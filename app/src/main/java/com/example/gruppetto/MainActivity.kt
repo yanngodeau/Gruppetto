@@ -6,10 +6,7 @@ import android.location.Address
 import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.ListView
@@ -19,6 +16,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import com.example.gruppetto.Adapters.LocationAdapter
+import com.example.gruppetto.Models.CardLocation
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -42,7 +41,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
 import com.mancj.materialsearchbar.MaterialSearchBar
-import kotlinx.android.synthetic.main.activity_main.*
 import java.io.IOException
 import java.util.*
 
@@ -74,9 +72,6 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
     private lateinit var searchBar: MaterialSearchBar
     private lateinit var drawer: DrawerLayout
     private lateinit var navigationView: NavigationView
-
-    private var suggestions = arrayListOf<User>()
-    private lateinit var userSuggestionsAdapter: UserSuggestionsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -113,7 +108,6 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
             addNewLocation()
         }
 
-        initializeSuggestions()
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -135,22 +129,10 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
 
         searchBar.setOnSearchActionListener(this)
 
-        userSuggestionsAdapter.suggestions = suggestions
-        searchBar.setCustomSuggestionAdapter(userSuggestionsAdapter)
 
 
         navigationView = findViewById(R.id.nav_view)
         navigationView.setNavigationItemSelectedListener(this)
-
-        searchBar.addTextChangeListener(object : TextWatcher {
-            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
-
-            override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-                userSuggestionsAdapter.filter.filter(searchBar.text)
-            }
-
-            override fun afterTextChanged(editable: Editable) {}
-        })
 
     }
 
@@ -208,34 +190,6 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
         }
     }
 
-    private fun initializeSuggestions() {
-//        val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        val inflater = LayoutInflater.from(applicationContext)
-        userSuggestionsAdapter = UserSuggestionsAdapter(inflater)
-
-        val ref = db.collection("users")
-            .get()
-            .addOnSuccessListener { result ->
-                if (result != null) {
-                    for (document in result) {
-                        suggestions.add(
-                            User(
-                                document["name"].toString(),
-                                document["mail"].toString(),
-                                document["photoUrl"].toString()
-                            )
-                        )
-                    }
-                    setUpSearchBar()
-
-                }
-            }.addOnFailureListener{ exception ->
-                exception.printStackTrace()
-                val toast =
-                    Toast.makeText(applicationContext, "Profiles recovery error", Toast.LENGTH_SHORT)
-                toast.show()
-            }
-    }
 
     private fun placeMarkerOnMap(latLng: LatLng) {
         val markerOptions = MarkerOptions().position(latLng)
