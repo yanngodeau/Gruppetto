@@ -6,10 +6,7 @@ import android.location.Address
 import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.ListView
@@ -19,6 +16,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import com.example.gruppetto.Adapters.LocationAdapter
+import com.example.gruppetto.Models.CardLocation
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -74,9 +73,6 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
     private lateinit var drawer: DrawerLayout
     private lateinit var navigationView: NavigationView
 
-    private var suggestions = arrayListOf<User>()
-    private lateinit var userSuggestionsAdapter: UserSuggestionsAdapter
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -86,6 +82,8 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
         setupUser()
         getLocationHistory()
 
+        setUpSearchBar()
+
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
@@ -94,7 +92,6 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
 
         setUpPlaces()
         guessCurrentPlace()
-
         bottomSheet = findViewById(R.id.bottom_sheet)
         val bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
         bottomSheetBehavior.setBottomSheetCallback(object :
@@ -113,7 +110,6 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
             addNewLocation()
         }
 
-        initializeSuggestions()
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -135,22 +131,10 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
 
         searchBar.setOnSearchActionListener(this)
 
-        userSuggestionsAdapter.suggestions = suggestions
-        searchBar.setCustomSuggestionAdapter(userSuggestionsAdapter)
 
 
         navigationView = findViewById(R.id.nav_view)
         navigationView.setNavigationItemSelectedListener(this)
-
-        searchBar.addTextChangeListener(object : TextWatcher {
-            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
-
-            override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-                userSuggestionsAdapter.filter.filter(searchBar.text)
-            }
-
-            override fun afterTextChanged(editable: Editable) {}
-        })
 
     }
 
@@ -208,34 +192,6 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
         }
     }
 
-    private fun initializeSuggestions() {
-//        val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        val inflater = LayoutInflater.from(applicationContext)
-        userSuggestionsAdapter = UserSuggestionsAdapter(inflater)
-
-        val ref = db.collection("users")
-            .get()
-            .addOnSuccessListener { result ->
-                if (result != null) {
-                    for (document in result) {
-                        suggestions.add(
-                            User(
-                                document["name"].toString(),
-                                document["mail"].toString(),
-                                document["photoUrl"].toString()
-                            )
-                        )
-                    }
-                    setUpSearchBar()
-
-                }
-            }.addOnFailureListener{ exception ->
-                exception.printStackTrace()
-                val toast =
-                    Toast.makeText(applicationContext, "Profiles recovery error", Toast.LENGTH_SHORT)
-                toast.show()
-            }
-    }
 
     private fun placeMarkerOnMap(latLng: LatLng) {
         val markerOptions = MarkerOptions().position(latLng)
@@ -248,23 +204,32 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
     }
 
     private fun getLocationHistory() {
+        //get les uid dans users/currentUser/locations
         val ref = db.collection("users").document(userUID).collection("locations")
         ref.get().addOnSuccessListener { result ->
             if (result != null) {
-                var locationList = arrayListOf<CardLocation>()
+                var locationUuidList = arrayListOf<String>()
                 for (document in result) {
-                    locationList.add(
-                        CardLocation(
-                            document["title"].toString(),
-                            document["address"].toString(),
-                            document["date"].toString()
-                        )
-                    )
+                    locationUuidList.add(document.id)
                 }
-                setUpLocationList(locationList)
+
+                //get les détails des locations dans locations/
+                db.collection("locations").whereIn("id",locationUuidList).get().addOnSuccessListener {result ->
+                    if (result != null) {
+                        var locationList = arrayListOf<CardLocation>()
+                        for (document in result){
+                            locationList.add(
+                                CardLocation(
+                                    document["title"].toString(),
+                                    document["address"].toString()
+                                )
+                            )
+                        }
+                        setUpLocationList(locationList)
+                    }
+                }
             }
         }
-
     }
 
     private fun getAddress(latLng: LatLng): String {
@@ -302,26 +267,47 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
             val toast =
                 Toast.makeText(applicationContext, "Location recovery error", Toast.LENGTH_SHORT)
             toast.show()
+            currentPlace = "Default"
         }
     }
 
     private fun addNewLocation() {
+
+
+        val refLoc = db.collection("locations").document()
         val dataLocation = hashMapOf(
             "title" to currentPlace,
             "address" to currentAddress,
             "location" to currentLocation,
+            "id" to refLoc.id
+
+        )
+        val dataUser = hashMapOf(
             "time" to Date()
         )
-        val ref = db.collection("users").document(userUID).collection("locations")
-            .add(dataLocation)
+        //a ajouter : verif si location existe déjà
+        refLoc.set(dataLocation)
             .addOnSuccessListener {
-                val toast =
-                    Toast.makeText(
-                        applicationContext,
-                        "New location added",
-                        Toast.LENGTH_LONG
-                    )
-                toast.show()
+                val refUser = db.collection("users").document(userUID).collection("locations").document(refLoc.id)
+                refUser.set(dataUser).addOnSuccessListener {
+                    val toast =
+                        Toast.makeText(
+                            applicationContext,
+                            "New location added",
+                            Toast.LENGTH_LONG
+                        )
+                    //refresh locations
+                    getLocationHistory()
+                    toast.show()
+                }.addOnFailureListener {
+                    val toast =
+                        Toast.makeText(
+                            applicationContext,
+                            "Error adding a location",
+                            Toast.LENGTH_LONG
+                        )
+                    toast.show()
+                }
             }.addOnFailureListener {
                 val toast =
                     Toast.makeText(
@@ -362,13 +348,16 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
         val id = menuItem.itemId
 
          if (id == R.id.nav_discussions) {
-//            val intent = Intent(this, MainActivity::class.java)
-//            startActivity(intent)
+            val intent = Intent(this, ChatActivity::class.java)
+            startActivity(intent)
         } else if (id == R.id.nav_evenements) {
 //             val intent = Intent(this, MainActivity::class.java)
 //             startActivity(intent)
          } else if (id == R.id.nav_profil) {
              val intent = Intent(this, ProfilActivity::class.java)
+             startActivity(intent)
+         } else if (id == R.id.nav_rechercher) {
+             val intent = Intent(this, SearchActivity::class.java)
              startActivity(intent)
          }
 

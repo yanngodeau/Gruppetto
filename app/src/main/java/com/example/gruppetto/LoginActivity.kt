@@ -14,7 +14,6 @@ import kotlinx.android.synthetic.main.activity_login.*
 
 class LoginActivity : AppCompatActivity() {
 
-
     private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,8 +29,6 @@ class LoginActivity : AppCompatActivity() {
                 login(loginText.text.toString(), pwText.text.toString())
             }
         }
-
-
     }
 
     override fun onStart() {

@@ -56,6 +56,8 @@
         <activity android:name=".ProfilActivity" />
         <activity android:name=".ProfilEditActivity"/>
         <activity android:name=".ChatActivity"/>
+        <activity android:name=".ChatAppActivity"/>
+        <activity android:name=".SearchActivity"/>
     </application>
 
 </manifest>
