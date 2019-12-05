@@ -53,8 +53,9 @@
             android:name=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity android:name=".ProfilActivity" />
-        <activity android:name=".ProfilEditActivity" />
-        <activity android:name=".ChatActivity" />
+        <activity android:name=".ProfilEditActivity"/>
+        <activity android:name=".ChatActivity"/>
+        <activity android:name=".ChatAppActivity"/>
     </application>
 
 </manifest>

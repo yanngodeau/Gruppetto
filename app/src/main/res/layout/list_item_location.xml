@@ -12,10 +12,10 @@
     app:cardElevation="4dp"
     app:cardCornerRadius="8dp"
     android:paddingBottom="8dp"
-    android:clickable="true"
+    android:clickable="false"
     android:foreground="?android:selectableItemBackground"
     android:minHeight="80dp"
-    android:focusable="true">
+    android:focusable="false">
 
     <LinearLayout
         android:layout_width="match_parent"
