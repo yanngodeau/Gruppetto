@@ -40,6 +40,7 @@ import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
+import com.google.firebase.firestore.auth.User
 import com.mancj.materialsearchbar.MaterialSearchBar
 import java.io.IOException
 import java.util.*
@@ -272,6 +273,9 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
     }
 
     private fun addNewLocation() {
+
+
+        //check if location existe
 
 
         val refLoc = db.collection("locations").document()

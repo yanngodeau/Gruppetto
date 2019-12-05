@@ -1,5 +1,6 @@
 package com.example.gruppetto
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -25,6 +26,8 @@ class SearchActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.acitvity_search)
+        setSupportActionBar(findViewById(R.id.my_toolbar))
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         userListView = findViewById(R.id.search_listView)
         inputSearch = findViewById(R.id.search)
@@ -77,13 +80,21 @@ class SearchActivity : AppCompatActivity() {
 
                 userListView.onItemClickListener =
                     AdapterView.OnItemClickListener { adapterView, view, i, l ->
-                        Toast.makeText(
-                            this@SearchActivity,
-                            adapter.getItem(i)!!.toString(),
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        val intent = Intent(this, ProfilSearchActivity::class.java)
+                        val profilName = adapter.getItem(i)!!.toString()
+                            //view.current_location.text.toString()
+                        intent.putExtra("profilName",profilName)
+                        Toast.makeText(this, "Clicked item :"+" "+profilName, Toast.LENGTH_SHORT).show()
+
+                        startActivity(intent)
                     }
 
             }
+    }
+
+    //nécessaire pour le bouton retour de l'app bar
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return true
     }
 }
