@@ -354,6 +354,9 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
          } else if (id == R.id.nav_profil) {
              val intent = Intent(this, ProfilActivity::class.java)
              startActivity(intent)
+         } else if (id == R.id.nav_rechercher) {
+             val intent = Intent(this, SearchActivity::class.java)
+             startActivity(intent)
          }
 
         drawer.closeDrawer(GravityCompat.START)
