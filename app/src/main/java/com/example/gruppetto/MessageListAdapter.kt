@@ -1,14 +1,19 @@
 package com.example.gruppetto
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
+import android.widget.ImageView
 import android.widget.TextView
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -51,16 +56,32 @@ class MessageListAdapter (private val context: Context,
         val heure = cal.get(Calendar.HOUR).toString()+":"+cal.get(Calendar.MINUTE).toString()
         heureText.text = heure
 
+
+
         return rowView
     }
 
     private fun getInfoUser(rowView : View, sender : String) {
         val nameText = rowView.findViewById<TextView>(R.id.text_message_name)
+        val storage = FirebaseStorage.getInstance()
+        var photoUrl = "gs://gruppetto-37713.appspot.com/blank.png"
         val ref = db.collection("users").document(sender)
         ref.get().addOnSuccessListener { document ->
             if (document != null) {
                 nameText.text = document["name"].toString()
                 //photo de profil à récupérer maybe
+                photoUrl = document["photoUrl"].toString()
+                //download profile picture
+                Log.w("PROFIL", photoUrl)
+                val storageRef = storage.getReferenceFromUrl(photoUrl)
+                val imageProfil = rowView.findViewById<ImageView>(R.id.image_message_profile)
+                val ONE_MEGABYTE: Long = 1024 * 1024
+                storageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener{
+                        data ->
+                    val bitmap : Bitmap = BitmapFactory.decodeByteArray(data,0,data.size)
+                    imageProfil.setImageBitmap(bitmap)
+
+                }
             }
         }
     }
