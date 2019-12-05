@@ -41,6 +41,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
 import com.mancj.materialsearchbar.MaterialSearchBar
+import kotlinx.android.synthetic.main.activity_main.*
 import java.io.IOException
 import java.util.*
 
@@ -90,7 +91,6 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
 
         setUpPlaces()
         guessCurrentPlace()
-
         bottomSheet = findViewById(R.id.bottom_sheet)
         val bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
         bottomSheetBehavior.setBottomSheetCallback(object :
@@ -212,23 +212,32 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
     }
 
     private fun getLocationHistory() {
+        //get les uid dans users/currentUser/locations
         val ref = db.collection("users").document(userUID).collection("locations")
         ref.get().addOnSuccessListener { result ->
             if (result != null) {
-                var locationList = arrayListOf<CardLocation>()
+                var locationUuidList = arrayListOf<String>()
                 for (document in result) {
-                    locationList.add(
-                        CardLocation(
-                            document["title"].toString(),
-                            document["address"].toString(),
-                            document["date"].toString()
-                        )
-                    )
+                    locationUuidList.add(document.id)
                 }
-                setUpLocationList(locationList)
+
+                //get les détails des locations dans locations/
+                db.collection("locations").whereIn("id",locationUuidList).get().addOnSuccessListener {result ->
+                    if (result != null) {
+                        var locationList = arrayListOf<CardLocation>()
+                        for (document in result){
+                            locationList.add(
+                                CardLocation(
+                                    document["title"].toString(),
+                                    document["address"].toString()
+                                )
+                            )
+                        }
+                        setUpLocationList(locationList)
+                    }
+                }
             }
         }
-
     }
 
     private fun getAddress(latLng: LatLng): String {
@@ -266,26 +275,47 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
             val toast =
                 Toast.makeText(applicationContext, "Location recovery error", Toast.LENGTH_SHORT)
             toast.show()
+            currentPlace = "Default"
         }
     }
 
     private fun addNewLocation() {
+
+
+        val refLoc = db.collection("locations").document()
         val dataLocation = hashMapOf(
             "title" to currentPlace,
             "address" to currentAddress,
             "location" to currentLocation,
+            "id" to refLoc.id
+
+        )
+        val dataUser = hashMapOf(
             "time" to Date()
         )
-        val ref = db.collection("users").document(userUID).collection("locations")
-            .add(dataLocation)
+        //a ajouter : verif si location existe déjà
+        refLoc.set(dataLocation)
             .addOnSuccessListener {
-                val toast =
-                    Toast.makeText(
-                        applicationContext,
-                        "New location added",
-                        Toast.LENGTH_LONG
-                    )
-                toast.show()
+                val refUser = db.collection("users").document(userUID).collection("locations").document(refLoc.id)
+                refUser.set(dataUser).addOnSuccessListener {
+                    val toast =
+                        Toast.makeText(
+                            applicationContext,
+                            "New location added",
+                            Toast.LENGTH_LONG
+                        )
+                    //refresh locations
+                    getLocationHistory()
+                    toast.show()
+                }.addOnFailureListener {
+                    val toast =
+                        Toast.makeText(
+                            applicationContext,
+                            "Error adding a location",
+                            Toast.LENGTH_LONG
+                        )
+                    toast.show()
+                }
             }.addOnFailureListener {
                 val toast =
                     Toast.makeText(
@@ -325,9 +355,9 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
     override fun onNavigationItemSelected(menuItem: MenuItem): Boolean {
         val id = menuItem.itemId
 
-        if (id == R.id.nav_discussions) {
-//            val intent = Intent(this, MainActivity::class.java)
-//            startActivity(intent)
+         if (id == R.id.nav_discussions) {
+            val intent = Intent(this, ChatActivity::class.java)
+            startActivity(intent)
         } else if (id == R.id.nav_evenements) {
 //             val intent = Intent(this, MainActivity::class.java)
 //             startActivity(intent)
