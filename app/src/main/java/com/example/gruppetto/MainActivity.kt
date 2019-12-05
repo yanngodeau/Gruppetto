@@ -82,6 +82,8 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
         setupUser()
         getLocationHistory()
 
+        setUpSearchBar()
+
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
