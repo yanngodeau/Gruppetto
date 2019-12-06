@@ -1,9 +1,12 @@
 package com.example.gruppetto
 
+import android.content.Intent
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 
@@ -25,7 +28,7 @@ class AddEvent : AppCompatActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.add_event)
-        //setSupportActionBar(findViewById(R.id.my_toolbar))
+        setSupportActionBar(findViewById(R.id.my_toolbar))
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         auth = FirebaseAuth.getInstance()
@@ -56,11 +59,10 @@ class AddEvent : AppCompatActivity(){
         event["allDayLong"] = isChecked
 
         //On ajoute un nouveau doc avec un id généré automatiquement
-        db.collection("evenemenet").add(event)
+        db.collection("evenement").add(event)
 
     }
 
-    /*
     //nécessaire pour le bouton retour de l'app bar
     override fun onSupportNavigateUp(): Boolean {
         finish()
@@ -89,6 +91,4 @@ class AddEvent : AppCompatActivity(){
             super.onOptionsItemSelected(item)
         }
     }
-
-     */
 }
