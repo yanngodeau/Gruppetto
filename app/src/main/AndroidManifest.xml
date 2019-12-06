@@ -58,6 +58,7 @@
         <activity android:name=".ChatActivity"/>
         <activity android:name=".ChatAppActivity"/>
         <activity android:name=".SearchActivity"/>
+        <activity android:name=".AddEvent"/>
         <activity android:name=".ProfilSearchActivity" />
     </application>
 

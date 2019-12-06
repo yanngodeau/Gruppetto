@@ -4,9 +4,14 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <include
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
-        layout="@layout/toolbar" />
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="#6200EE"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        />
 
     <EditText
         android:id="@+id/event_name"
@@ -44,15 +49,15 @@
         android:layout_height="80dp"
         android:layout_below="@id/textView1"
         android:calendarViewShown="false"
-        android:datePickerMode="spinner" />
+        android:datePickerMode="spinner"
+        />
 
     <TimePicker
         android:id="@+id/timePicker1"
-        android:layout_width="150dp"
-        android:layout_height="80dp"
-        android:layout_marginStart="12dp"
-        android:layout_below="@id/textView1"
-        android:layout_toEndOf="@id/datePicker1"
+        android:layout_width="233dp"
+        android:layout_height="70dp"
+        android:layout_below="@id/datePicker1"
+        android:layout_marginTop="1dp"
         android:timePickerMode="spinner" />
 
     <TextView
@@ -74,12 +79,10 @@
 
     <TimePicker
         android:id="@+id/timePicker2"
-        android:layout_width="160dp"
-        android:layout_height="76dp"
-        android:layout_below="@id/textView2"
-        android:layout_marginStart="4dp"
-        android:layout_marginTop="0dp"
-        android:layout_toEndOf="@id/datePicker2"
+        android:layout_width="231dp"
+        android:layout_height="71dp"
+        android:layout_below="@id/datePicker2"
+        android:layout_marginTop="1dp"
         android:timePickerMode="spinner" />
 
     <CheckBox
@@ -89,7 +92,7 @@
         android:text="@string/checkbox"
         android:textSize="18sp"
         android:textColor="@color/colorEditText"
-        android:layout_below="@id/datePicker2">
+        android:layout_below="@id/timePicker2">
     </CheckBox>
 
     <Button
@@ -108,4 +111,12 @@
         android:textColor="@color/texteBouton"
         android:textStyle="bold"
         android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:id="@+id/successTextMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/addEventButton"
+        ></TextView>
+
 </RelativeLayout>
