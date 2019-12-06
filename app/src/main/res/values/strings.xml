@@ -15,4 +15,10 @@
     <string name="menu_tools">Tools</string>
     <string name="menu_share">Share</string>
     <string name="menu_send">Send</string>
+    <string name="event_name">Nom de l\'évènement</string>
+    <string name="de">De</string>
+    <string name="ajouter_evenement">Ajouter evenement</string>
+    <string name="checkbox">Toute la journée</string>
+    <string name="a">A</string>
+    <string name="localisation">Localisation</string>
 </resources>
