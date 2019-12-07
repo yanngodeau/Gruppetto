@@ -87,15 +87,14 @@ class EventsList : AppCompatActivity() {
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        R.id.action_add_event -> {
-            val intent = Intent(this, AddEvent::class.java)
-            startActivity(intent)
-            true
+    override fun onOptionsItemSelected(item: MenuItem) : Boolean  {
+        when (item.itemId) {
+            R.id.action_add_event -> {
+                val intent = Intent(this, AddEvent::class.java)
+                startActivity(intent)
+                return true
+            }
         }
-
-        else -> {
-            super.onOptionsItemSelected(item)
-        }
+        return super.onOptionsItemSelected(item)
     }
 }

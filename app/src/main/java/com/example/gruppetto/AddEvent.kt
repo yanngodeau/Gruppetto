@@ -101,12 +101,6 @@ class AddEvent : AppCompatActivity(){
 
     }
 
-    //lien entre appbar et menu xml
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.app_bar_profil, menu)
-        return true
-    }
-
     //nécessaire pour le bouton retour de l'app bar
     override fun onSupportNavigateUp(): Boolean {
         finish()
