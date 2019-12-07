@@ -101,32 +101,15 @@ class AddEvent : AppCompatActivity(){
 
     }
 
-    //nécessaire pour le bouton retour de l'app bar
-    override fun onSupportNavigateUp(): Boolean {
-        finish()
-        return true
-    }
-
     //lien entre appbar et menu xml
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.app_bar_profil, menu)
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        R.id.action_edit -> {
-            val intent = Intent(this, ProfilEditActivity::class.java)
-            startActivity(intent)
-            true
-        }
-        R.id.action_logout -> {
-            auth.signOut()
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
-            true
-        }
-        else -> {
-            super.onOptionsItemSelected(item)
-        }
+    //nécessaire pour le bouton retour de l'app bar
+    override fun onSupportNavigateUp(): Boolean {
+        finish()
+        return true
     }
 }

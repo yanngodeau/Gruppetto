@@ -355,7 +355,7 @@ open class MainActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnM
             val intent = Intent(this, ChatActivity::class.java)
             startActivity(intent)
         } else if (id == R.id.nav_evenements) {
-             val intent = Intent(this, AddEvent::class.java)
+             val intent = Intent(this, EventsList::class.java)
              startActivity(intent)
          } else if (id == R.id.nav_profil) {
              val intent = Intent(this, ProfilActivity::class.java)
