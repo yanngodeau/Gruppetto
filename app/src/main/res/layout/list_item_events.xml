@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/Widget.MaterialComponents.CardView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="@dimen/mtrl_card_spacing"
+    android:layout_marginTop="@dimen/mtrl_card_spacing"
+    android:layout_marginRight="@dimen/mtrl_card_spacing"
+    app:cardUseCompatPadding="true"
+    app:cardElevation="4dp"
+    app:cardCornerRadius="8dp"
+    android:paddingBottom="8dp"
+    android:clickable="false"
+    android:foreground="?android:selectableItemBackground"
+    android:minHeight="80dp"
+    android:focusable="false">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- Card contents. -->
+        <TextView
+            android:textStyle="bold"
+            android:id="@+id/eventName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:text="Location"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"/>
+
+        <TextView
+            android:id="@+id/address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="8dp"
+            android:textColor="@color/quantum_grey"
+            android:text="Address"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"/>
+
+        <TextView
+            android:id="@+id/startingDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="8dp"
+            android:textColor="@color/quantum_grey"
+            android:text="Starting Date"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"/>
+
+        <TextView
+            android:id="@+id/endingDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="8dp"
+            android:textColor="@color/quantum_grey"
+            android:text="Ending Date"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"/>
+
+        <TextView
+            android:id="@+id/startingTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="8dp"
+            android:textColor="@color/quantum_grey"
+            android:text="Starting Time"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"/>
+
+        <TextView
+            android:id="@+id/endingTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="8dp"
+            android:textColor="@color/quantum_grey"
+            android:text="Ending Time"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"/>
+
+
+    </LinearLayout>
+
+
+</com.google.android.material.card.MaterialCardView>

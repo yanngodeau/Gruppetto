@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/my_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@android:color/transparent"
+        android:elevation="0dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        />
+
+    <EditText
+        android:id="@+id/event_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="@string/event_name"
+        android:textColorHint="#000000"
+        android:textSize="24sp"
+        android:layout_below="@id/my_toolbar"
+        android:autofillHints=""
+        android:inputType="text" />
+
+    <EditText
+        android:id="@+id/localisation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/event_name"
+        android:autofillHints=""
+        android:hint="@string/localisation"
+        android:textColor="@color/colorEditText"
+        android:textSize="18sp"
+        android:inputType="text" />
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/de"
+        android:textColor="@color/colorEditText"
+        android:textSize="18sp"
+        android:layout_below="@id/localisation"/>
+
+    <DatePicker
+        android:id="@+id/datePicker1"
+        android:layout_width="230dp"
+        android:layout_height="80dp"
+        android:layout_below="@id/textView1"
+        android:calendarViewShown="false"
+        android:datePickerMode="spinner"
+        />
+
+    <TimePicker
+        android:id="@+id/timePicker1"
+        android:layout_width="233dp"
+        android:layout_height="70dp"
+        android:layout_below="@id/datePicker1"
+        android:layout_marginTop="1dp"
+        android:timePickerMode="spinner" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/a"
+        android:textColor="@color/colorEditText"
+        android:textSize="18sp"
+        android:layout_below="@id/timePicker1"/>
+
+    <DatePicker
+        android:id="@+id/datePicker2"
+        android:layout_width="237dp"
+        android:layout_height="76dp"
+        android:layout_below="@id/textView2"
+        android:calendarViewShown="false"
+        android:datePickerMode="spinner" />
+
+    <TimePicker
+        android:id="@+id/timePicker2"
+        android:layout_width="231dp"
+        android:layout_height="71dp"
+        android:layout_below="@id/datePicker2"
+        android:layout_marginTop="1dp"
+        android:timePickerMode="spinner" />
+
+    <CheckBox
+        android:id="@+id/checkBox1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/checkbox"
+        android:textSize="18sp"
+        android:textColor="@color/colorEditText"
+        android:layout_below="@id/timePicker2">
+    </CheckBox>
+
+    <Button
+        android:id="@+id/addEventButton"
+        android:layout_width="162dp"
+        android:layout_height="50dp"
+        android:layout_below="@id/checkBox1"
+        android:bottomRightRadius="20dp"
+        android:bottomLeftRadius="20dp"
+        android:topLeftRadius="20dp"
+        android:topRightRadius="20dp"
+        android:layout_marginTop="45dp"
+        android:textSize="18sp"
+        android:background="@color/bouton"
+        android:text="@string/ajouter_evenement"
+        android:textColor="@color/texteBouton"
+        android:textStyle="bold"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:id="@+id/successTextMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/addEventButton"
+        ></TextView>
+
+</RelativeLayout>
